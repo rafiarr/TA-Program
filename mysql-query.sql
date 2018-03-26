@@ -19,3 +19,5 @@ from 	(select e.cid as cid, e.signature as signature, e.timestamp as timestamp, 
 	 from sig_class c, signature s 
 	 where (s.sig_id = 511 or s.sig_id = 509) and c.sig_class_id = s.sig_class_id) a 
 where i.signature=a.signature order by i.timestamp;
+
+-- requirement : cid, timestamp, ip_src, ip_dst, tcp_sport, tcp_dport, udp_sport, udp_dport, sig_name, sig_class_name, icmp_activity, icmp_type
