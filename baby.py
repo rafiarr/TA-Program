@@ -1,23 +1,20 @@
 import csv
 import sys
+import os
 
-f = open(sys.argv[1], 'rt')
-d = open(sys.argv[2], 'rt')
-try:
-    reader = csv.reader(f)
-    i = 0
-    for row in reader:
-        if i!=1:
-            i++
-            continue
-        print row
+# os.chdir('dataset/LLDOS-1')
 
-    reader = csv.reader(d)
-    i = 0
-    for row in reader:
-        if i!=1:
-            i++
-            continue
-        print row
-finally:
-    f.close()
+# for name in os.listdir("."):
+#     print name 
+
+f = open('dataset/LLDOS-1/dmzphase1.csv', 'rb')
+
+reader = csv.reader(f)
+for row in reader:
+    alert = row[1:],'dmzphase1'
+    print alert
+
+# for x in range(len(alerts)):
+#     print alerts[x]
+
+f.close()
