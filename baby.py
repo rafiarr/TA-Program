@@ -1,6 +1,7 @@
 import csv
 import sys
 import os
+from alert import Alert
 
 dataset = 'dataset/LLDOS-1'
 
@@ -9,26 +10,24 @@ def alertCsvReader(filepath,filename):
     alerts = []
     reader = csv.reader(f)
     for row in reader:
-        alert = {'timestamp': row[1],
-                'ip_dst': row[2],
-                'ip_dst': row[3],
-                'icmp':row[4],
-                'icmp_type':row[5],
-                'tcp_dport':row[6],
-                'tcp_sport':row[7],
-                'udp_dport':row[8],
-                'udp_sport':row[9],
-                'sig_name':row[10],
-                'sig_class_name':row[11],
-                'phase':filename}
+        alert = Alert(row[1], #timestamp
+                      row[2], #ip_dst
+                      row[3], #ip_src
+                      row[4], #icmp_status
+                      row[5], #icmp_type
+                      row[6], #tcp_dport
+                      row[7], #tcp_sport
+                      row[8], #udp_dport
+                      row[9], #udp_sport
+                      row[10], #sig_name
+                      row[11], #sig_class_name
+                      filename) #phase
         alerts.append(alert)
     f.close()
     return alerts    
 
 def main():
     
-    # for x in range(len(alerts)):
-    #     print alerts[x]
     alerts = []
     for dirname, dirnames, filenames in os.walk('dataset/LLDOS-1'):
             
@@ -44,13 +43,11 @@ def main():
         if '.git' in dirnames:
             dirnames.remove('.git')
     
-    fileName = ''
-    for x in range(len(alerts)):
-        if alerts[x]['phase'] != fileName:
-            fileName = alerts[x]['phase']
-            print fileName
-        else:
-            continue
+    newList = sorted(alerts, key=lambda alert: alert.timestamp)
+    
+    for x in range(len(newList)):
+        fileName = newList[x].getTimestamp()
+        print fileName
 
 if __name__ == '__main__':
     main()
