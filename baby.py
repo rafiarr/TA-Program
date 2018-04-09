@@ -1,9 +1,21 @@
 import csv
 import sys
 import os
-from alert import Alert
+from alert import *
 
 dataset = 'dataset/LLDOS-1'
+
+def ipToBinary(ipAddr):
+    
+    ip = ipAddr.split(".")
+    
+    fullBinary = ''
+    for number in ip:
+        binary = "{0:08b}".format(int(number))
+        fullBinary += binary
+        
+    return fullBinary
+
 
 def alertCsvReader(filepath,filename):
     f = open(filepath, 'rb')
@@ -44,10 +56,18 @@ def main():
             dirnames.remove('.git')
     
     newList = sorted(alerts, key=lambda alert: alert.timestamp)
-    
+    count = 0
     for x in range(len(newList)):
-        fileName = newList[x].getTimestamp()
-        print fileName
+        count = count+1
+    print count
+
+    print newList[0].ip_src
+
+    print newList[1].ip_src
+
+    correlation = AlertCorrelation(newList[0],newList[1])
+    
+    print correlation.calculateF1()
 
 if __name__ == '__main__':
     main()

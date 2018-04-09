@@ -67,26 +67,34 @@ FROM
 				s.sig_class_name as sig_class_name, 
 				inet_ntoa(i.ip_dst) as ip_dst, 
 				inet_ntoa(i.ip_src) as ip_src
-			FROM 	
-				(select 
-					s.cid as cid, 
-					s.timestamp as timestamp, 
-					s.sig_name as sig_name, 
-					sc.sig_class_name as sig_class_name
+			FROM
+
+				(select -- get cid, timestamp, sig_name, sig_class_name
+					signature.cid as cid, 
+					signature.timestamp as timestamp, 
+					signature.sig_name as sig_name, 
+					sig_class.sig_class_name as sig_class_name
+				
 				FROM
-					(select 
-						e.cid as cid, 
-						e.timestamp as timestamp, 
-						s.sig_name as sig_name,  
-						s.sig_class_id as sig_class_id 
-					from event e, signature s
-					where e.signature = s.sig_id) s, 
-					sig_class sc
-				where s.sig_class_id = sc.sig_class_id) s, 
+					
+					(select -- get cid, timestamp, sig_name, sig_class_id
+						event.cid as cid, 
+						event.timestamp as timestamp, 
+						signature.sig_name as sig_name,  
+						signature.sig_class_id as sig_class_id 
+					from event, signature
+					where event.signature = signature.sig_id) signature, 
+					sig_class
+
+				WHERE signature.sig_class_id = sig_class.sig_class_id) s, 
 				iphdr i
 			WHERE s.cid = i.cid) e,
+			
+			-- cid, icmp, icmp_type
 			(SELECT
-				e.cid as cid, 
+				e.cid as cid,
+
+				-- cek kalo ga punya icmp
 				CASE IFNULL(i.cid,-1)
 				WHEN -1 THEN 'Tidak menggunakan ICMP'
 				ELSE 'Ya'
