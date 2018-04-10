@@ -34,8 +34,8 @@ class Alert:
         self.icmp_type      = file_icmp_type
         self.tcp_dport      = file_tcp_dport
         self.tcp_sport      = file_tcp_sport
-        self.udp_dport      = file_tcp_dport
-        self.udp_sport      = file_tcp_sport
+        self.udp_dport      = file_udp_dport
+        self.udp_sport      = file_udp_sport
         self.sig_name       = file_sig_name
         self.sig_class_name = file_sig_class_name
         self.phase          = file_phase
@@ -44,15 +44,12 @@ class Alert:
         return self.timestamp
 
 class AlertCorrelation:
-    alerts  = []
-    f1      = 0
-    f2      = 0
-    f3      = 0
-    f4      = 0
+    alert1 = []
+    alert2 = []
 
     def __init__(self,alert1,alert2):
-        self.alerts.append(alert1)
-        self.alerts.append(alert2)
+        self.alert1 = alert1
+        self.alert2 = alert2
 
     def ipToBinary(self,ipAddr):
         
@@ -72,6 +69,14 @@ class AlertCorrelation:
 
         return count
 
+    def getSrcPortNumber(self,alert):
+        port = 0
+        if(alert.tcp_sport != "Tidak menggunakan TCP"):
+            port = alert.tcp_sport
+        else:
+            port = alert.udp_sport
+        return port
+
     def compareIP(self,ipAddr1,ipAddr2):
 
         ipBin1 = self.ipToBinary(ipAddr1)
@@ -79,13 +84,31 @@ class AlertCorrelation:
         
         return self.compareUrutan(ipBin1,ipBin2)
 
+    def compareNumber(self,num1,num2):
+        if (num1 == num2):
+            return 1
+        else:
+            return 0
+
     def calculateF1(self):
-        ip_src1 = self.alerts[0].ip_src
-        ip_src2 = self.alerts[1].ip_src
+        ip_src1 = self.alert1.ip_src
+        ip_src2 = self.alert2.ip_src
         return self.compareIP(ip_src1,ip_src2)/32
         
-    def calculateF2(self,ip_dst1,ip_dst2):
-        return self.compareIP(ip_dst1,ip_dst2)/32
+    def calculateF2(self):
+        ip_dst1 = self.alert1.ip_dst
+        ip_dst2 = self.alert2.ip_dst
+        return self.compareIP(ip_dst1,ip_dst2)/32        
+
+    def calculateF3(self):
+        src_port1 = self.getSrcPortNumber(self.alert1)
+        src_port2 = self.getSrcPortNumber(self.alert2)
+        return self.compareNumber(src_port1,src_port2)
+
+    def calculateF4(self):
+        ip_src1 = self.alert1.ip_src
+        ip_dst2 = self.alert2.ip_dst
+        return self.compareNumber(ip_src1,ip_dst2)
 
     # def calculateF3():
     #     ports1 = []

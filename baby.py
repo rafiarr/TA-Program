@@ -57,18 +57,16 @@ def main():
     
     newList = sorted(alerts, key=lambda alert: alert.timestamp)
     count = 0
-    for x in range(len(newList)):
-        count = count+1
-    print count
-
-    print newList[0].ip_src
-
-    print newList[1].ip_src
-
-    correlation = AlertCorrelation(newList[0],newList[1])
-    
-    print correlation.calculateF1()
-
+    fValue = []
+    for i in range(len(newList)):
+        for j in range(len(newList)):
+            correlation = AlertCorrelation(newList[j] # current alert
+                                            ,newList[i]) #previous alert
+            f1 = correlation.calculateF1()
+            f2 = correlation.calculateF2()
+            f3 = correlation.calculateF3()
+            f4 = correlation.calculateF4()
+            print "cid1 : " +str(j+1)+", cid2 : " +str(i+1)+", F1 : " +str(f1)+ ", F2 : "+str(f2)+", F3 : "+str(f3)+", F4 : "+str(f4)
 if __name__ == '__main__':
     main()
 
