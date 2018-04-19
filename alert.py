@@ -64,7 +64,9 @@ class AlertCorrelation:
         
         count = 0
         for x in range(len(string1)):
-            if(string1[x] == string2[x]):
+            if(string1[x] != string2[x]):
+                break
+            else:
                 count = count + 1
 
         return count
