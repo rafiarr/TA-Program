@@ -1,4 +1,5 @@
 from __future__ import division
+import csv
 
 def ipToBinary(ipAddr):
     
@@ -31,33 +32,12 @@ def compareIP(ipAddr1,ipAddr2):
     # print compareUrutan(ipBin1,ipBin2)
     return compareUrutan(ipBin1,ipBin2)
 
-print compareIP("192.168.56.101","192.168.56.102")
 
-# print fValue1("192.168.56.101","192.168.56.102")/32
+signatureClassFile = 'dataset/sig_class.csv'
+f = open(signatureClassFile,'rb')
+reader = csv.reader(f)
+sigClass = {}
+for row in reader:
+    sigClass[row[1]] = row[0]
 
-# fValue = float(fValue1("192.168.56.101","192.168.56.102")/32)
-
-# printString = "nilai F1 : " + str(fValue) 
-
-
-n = 1596
-array = [[0 for x in range(n)] for y in range(n)]
-for i in range(1596):
-    for j in range(1596):
-        array[i][j] = 1 + i + j
-
-print array[1][1]
-print array[1595][1595]
-
-
-
-def comparePort(portNumber1,portNumber2):
-    if(portNumber1 == portNumber2):
-        return True
-    else:
-        return False
-
-if(comparePort(1,1)):
-    print "sama"
-else:
-    print "beda"
+print sigClass['attempted-dos']

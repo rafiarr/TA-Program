@@ -3,8 +3,6 @@ import sys
 import os
 from alert import *
 
-dataset = 'dataset/LLDOS-1'
-
 def ipToBinary(ipAddr):
     
     ip = ipAddr.split(".")
@@ -15,7 +13,6 @@ def ipToBinary(ipAddr):
         fullBinary += binary
         
     return fullBinary
-
 
 def alertCsvReader(filepath,filename):
     f = open(filepath, 'rb')
@@ -38,10 +35,19 @@ def alertCsvReader(filepath,filename):
     f.close()
     return alerts    
 
-def main():
-    
+def sigClassCsvReader(signatureClassFile):
+    f = open(signatureClassFile,'rb')
+    reader = csv.reader(f)
+    sigClass = {}
+    for row in reader:
+        sigClass[row[1]] = row[0]
+
+    f.close()
+    return sigClass
+
+def getAlertinDataset(dataset):
     alerts = []
-    for dirname, dirnames, filenames in os.walk('dataset/LLDOS-1'):
+    for dirname, dirnames, filenames in os.walk(dataset):
             
         for filename in filenames:
             filePath = os.path.join(dirname, filename)
@@ -56,8 +62,18 @@ def main():
             dirnames.remove('.git')
     
     newList = sorted(alerts, key=lambda alert: alert.timestamp)
-    count = 0
-    fValue = []
+
+    return newList
+
+def main():
+
+    dataset = 'dataset/LLDOS-1'
+    signatureClassFile = 'dataset/sig_class.csv'
+
+    sigClass = sigClassCsvReader(signatureClassFile)
+
+    newList = getAlertinDataset(dataset)
+    
     for i in range(len(newList)):
         for j in range(len(newList)):
             correlation = AlertCorrelation(newList[j] # current alert
