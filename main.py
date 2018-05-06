@@ -73,6 +73,12 @@ def main():
     sigClass = sigClassCsvReader(signatureClassFile)
 
     newList = getAlertinDataset(dataset)
+
+    correlatedProb = []
+
+    for i in range(len(sigClass)):
+        for j in range(len(sigClass)):
+            correlatedProb[i][j] = 0
     
     for i in range(len(newList)):
         for j in range(len(newList)):

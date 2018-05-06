@@ -1,5 +1,6 @@
 from __future__ import division
 import csv
+import time
 
 def ipToBinary(ipAddr):
     
@@ -40,4 +41,15 @@ sigClass = {}
 for row in reader:
     sigClass[row[1]] = row[0]
 
-print sigClass['attempted-dos']
+# print len(sigClass)
+
+# print time.localtime(952386696.0)
+# print time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(952386696.0))
+firstList = [1,2,3,4]
+
+newList = []
+
+newList.append(firstList[2])
+
+print newList
+

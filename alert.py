@@ -2,6 +2,7 @@ from __future__ import division
 
 
 class Alert:
+    alertId         = 0
     timestamp       = ''
     ip_dst          = ''
     ip_src          = ''
@@ -40,8 +41,8 @@ class Alert:
         self.sig_class_name = file_sig_class_name
         self.phase          = file_phase
 
-    def getTimestamp(self):
-        return self.timestamp
+    def setId(self,newId):
+        self.alertId = newId
 
 class AlertCorrelation:
     alert1 = []
@@ -118,3 +119,14 @@ class AlertCorrelation:
     #         if(alerts[1].tcp_dport != "Tidak menggunakan TCP"):
     #     else:
 
+class TimeFrame:
+    startTime   = 0
+    endTime     = 0
+    
+    def __init__(self,firstTime,lastTime):
+        self.startTime  = firstTime
+        self.endTime    = lastTime
+        self.alerts     = []
+
+    def appendNewAlert(self,newAlert):
+        self.alerts.append(newAlert)
