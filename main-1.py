@@ -80,8 +80,20 @@ def main():
 
     timeSortedAlerts = getAlertinDataset(dataset)
 
+    path = outputFileLocation + "alerts.txt"
+        
+    outputFile =  open(path,"wb")
+
+    output = "Id,timestamp,ip_dst,ip_src,icmp_status,icmp_type,tcp_dport,tcp_sport,udp_dport,udp_sport,sig_name,sig_class_name,phase"
+
+    outputFile.write(output)
+
     for i in range(len(timeSortedAlerts)):
         timeSortedAlerts[i].setId(i+1)
+        output = str(timeSortedAlerts[i].alertId)+","+str(timeSortedAlerts[i].timestamp)+","+str(timeSortedAlerts[i].ip_dst)+","+str(timeSortedAlerts[i].ip_src)+","+str(timeSortedAlerts[i].icmp_status)+","+str(timeSortedAlerts[i].icmp_type)+","+str(timeSortedAlerts[i].tcp_dport)+","+str(timeSortedAlerts[i].tcp_sport)+","+str(timeSortedAlerts[i].udp_dport)+","+str(timeSortedAlerts[i].udp_sport)+","+str(timeSortedAlerts[i].sig_name)+","+str(timeSortedAlerts[i].sig_class_name)+","+str(timeSortedAlerts[i].phase)+"\n"
+        outputFile.write(output)
+
+    outputFile.close()
 
     timeFrameList = []
 
