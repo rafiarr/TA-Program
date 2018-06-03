@@ -88,6 +88,10 @@ def main():
             f2 = correlation.calculateF2()
             f3 = correlation.calculateF3()
             f4 = correlation.calculateF4()
+
+
+
+            
             print "cid1 : " +str(j+1)+", cid2 : " +str(i+1)+", F1 : " +str(f1)+ ", F2 : "+str(f2)+", F3 : "+str(f3)+", F4 : "+str(f4)
 if __name__ == '__main__':
     main()

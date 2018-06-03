@@ -1,5 +1,5 @@
 from __future__ import division
-
+import time
 
 class Alert:
     alertId         = 0
@@ -112,6 +112,20 @@ class AlertCorrelation:
         ip_src1 = self.alert1.ip_src
         ip_dst2 = self.alert2.ip_dst
         return self.compareNumber(ip_src1,ip_dst2)
+
+    def calculateF5(self):
+        return 0
+    
+    def calculateF6(self):
+        time1 = self.alert1.timestamp
+        time1 = time.mktime(time.strptime(time1, "%Y-%m-%d %H:%M:%S"))
+
+        time2 = self.alert2.timestamp
+        time2 = time.mktime(time.strptime(time2, "%Y-%m-%d %H:%M:%S"))
+
+        frequency = 1/(abs(time1-time2))
+        return frequency
+
 
     # def calculateF3():
     #     ports1 = []
