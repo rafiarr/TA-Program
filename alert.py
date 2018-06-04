@@ -119,11 +119,18 @@ class AlertCorrelation:
     def calculateF6(self):
         time1 = self.alert1.timestamp
         time1 = time.mktime(time.strptime(time1, "%Y-%m-%d %H:%M:%S"))
+        print "alert1 : "+str(time1)
 
         time2 = self.alert2.timestamp
         time2 = time.mktime(time.strptime(time2, "%Y-%m-%d %H:%M:%S"))
+        print "alert2 : "+str(time2)
 
-        frequency = 1/(abs(time1-time2))
+        deltaTime = abs(time1-time2)
+        if(deltaTime == 0):
+            frequency = 1/1
+        else :
+            frequency = 1/(deltaTime)
+        
         return frequency
 
 
