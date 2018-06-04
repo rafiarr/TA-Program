@@ -1,0 +1,21 @@
+Things To Do :
+---------------
+Program :
+- Baca dataset V
+- Sort dataset V
+- F1 V
+- F2 V
+- F3 V
+- F4 V
+- F5 
+- F6 - Test
+- SVM
+- Output
+
+---------------
+Buku :
+- Download Proposal
+- Ubah Cover
+- Ubah Lembar Pengesahan
+- Buat Abstrak
+- Cari Kata kunci
