@@ -45,12 +45,28 @@ class Alert:
         self.alertId = newId
 
 class AlertCorrelation:
-    alert1 = []
-    alert2 = []
-
+    alert1      = []
+    alert2      = []
+    f1          = 0
+    f2          = 0
+    f3          = 0
+    f4          = 0
+    f5          = 0
+    f6          = 0
+    tracehold   = 0.5
     def __init__(self,alert1,alert2):
         self.alert1 = alert1
         self.alert2 = alert2
+        self.f1     = self.calculateF1()
+        self.f2     = self.calculateF2()
+        self.f3     = self.calculateF3()
+        self.f4     = self.calculateF4()
+        self.f5     = self.calculateF5()
+        self.f6     = self.calculateF6()
+        
+        
+        # if (self.f1 >= self.tracehold and self.f2 >= self.tracehold)
+
 
     def ipToBinary(self,ipAddr):
         
@@ -114,16 +130,22 @@ class AlertCorrelation:
         return self.compareNumber(ip_src1,ip_dst2)
 
     def calculateF5(self):
-        return 0
+        value = 0
+       
+        if(self.f1 == self.f2 == self.f3 == 1):
+            value = 1
+
+        return value
+
     
     def calculateF6(self):
         time1 = self.alert1.timestamp
         time1 = time.mktime(time.strptime(time1, "%Y-%m-%d %H:%M:%S"))
-        print "alert1 : "+str(time1)
+        # print "alert1 : "+str(time1)
 
         time2 = self.alert2.timestamp
         time2 = time.mktime(time.strptime(time2, "%Y-%m-%d %H:%M:%S"))
-        print "alert2 : "+str(time2)
+        # print "alert2 : "+str(time2)
 
         deltaTime = abs(time1-time2)
         if(deltaTime == 0):
@@ -133,12 +155,15 @@ class AlertCorrelation:
         
         return frequency
 
-
-    # def calculateF3():
-    #     ports1 = []
-    #     if (alerts[1].icmp_status == "Ya"):
-    #         if(alerts[1].tcp_dport != "Tidak menggunakan TCP"):
-    #     else:
+    def getValues(self):
+        newList = []
+        newList.append(self.f1)
+        newList.append(self.f2)
+        newList.append(self.f3)
+        newList.append(self.f4)
+        newList.append(self.f5)
+        newList.append(self.f6)
+        return newList
 
 class TimeFrame:
     startTime   = 0
@@ -152,6 +177,83 @@ class TimeFrame:
     def appendNewAlert(self,newAlert):
         self.alerts.append(newAlert)
 
+class AlertCausalityMatrix:
+    causalityMatrix = []
+    alertList       = []
+    alertSigmaValue = []
+
+    def __init__(self,newAlertList):
+        self.alertList = newAlertList
+        for i in range(len(self.alertList)):
+            tempList = []
+            self.alertSigmaValue.append(0)    
+            for j in range(len(self.alertList)):
+                tempList.append(0)
+
+            self.causalityMatrix.append(tempList)
+        
+
+
+    def getAlertIndex(self,alertName):
+        
+        if ((alertName in self.alertList) == True):
+            index = self.alertList.index(alertName)
+        else:
+            index = -1
+
+        return index
+
+    def incrementACMValue(self,alert1,alert2):
+
+        index1 = self.getAlertIndex(alert1)
+        index2 = self.getAlertIndex(alert2)
+        if (index1 != -1 and index2 != -1):
+            self.causalityMatrix[index1][index2] = self.causalityMatrix[index1][index2] + 1
+
+    def calculateAllSigmaValue(self):
+        
+        for i in range(len(self.alertList)):
+            self.alertSigmaValue[i] = 0
+
+        for i in range(len(self.alertList)):
+            for j in range(len(self.alertList)):
+               self.alertSigmaValue[i] += self.causalityMatrix[i][j] 
+
+    def calculateForwardCorrelationStrength(self,alert1,alert2):
+        index1 = self.getAlertIndex(alert1)
+        index2 = self.getAlertIndex(alert2)
+        value = self.causalityMatrix[index1][index2]/self.alertSigmaValue[index1]
+        return value
+
+    def getRelatedList(self):
+        self.calculateAllSigmaValue()
+        edgeList = []
+        for i in range(len(self.alertList)):
+            maxValue = 0
+            
+            for j in range(len(self.alertList)):
+
+                alert1 = self.alertList[i]
+                alert2 = self.alertList[j]
+                forwardCorrelation = self.calculateForwardCorrelationStrength(alert1,alert2)
+                if maxValue < forwardCorrelation:
+                    maxValue = forwardCorrelation
+            
+            for j in range(len(self.alertList)):
+
+                alert1 = self.alertList[i]
+                alert2 = self.alertList[j]
+                forwardCorrelation = self.calculateForwardCorrelationStrength(alert1,alert2)
+                if(maxValue - forwardCorrelation <= 0.3 and forwardCorrelation != 0):
+                    edge = {'alert1': alert1,
+                            'alert2': alert2,
+                            'strength': forwardCorrelation}
+                    edgeList.append(edge)
+                output = "maxValue : "+str(maxValue)+" FCStrength : "+str(forwardCorrelation)+"\n"
+                # print output
+
+        for edge in edgeList:
+            print edge
 
 # "1","2000-03-07 06:51:36","172.16.115.1","202.77.162.213","Ya","8","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP PING","misc-activity"
 # "2","2000-03-07 06:51:36","202.77.162.213","172.16.115.1","Ya","0","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP Echo Reply","misc-activity"

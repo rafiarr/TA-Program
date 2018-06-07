@@ -4,11 +4,22 @@ import os
 from alert import *
 
 class OsHandler:
+    
     datasetDirPath      = ''
-    outputFileLocation  = ''
-    def __init__(self,datasetPath,programName):
-        self.datasetDirPath = datasetPath
-        self.outputFileLocation = 'output/' + str(programName)
+    alertDirPath        = ''
+    outputFileDirPath   = ''
+    dataTrainDirPath    = ''
+    programName         = ''
+
+    def __init__(self,datasetPath,program):
+        self.datasetDirPath     = datasetPath
+        self.programName        = program
+        self.alertDirPath       = self.datasetDirPath + '/alert'
+        self.outputFileDirPath  = self.datasetDirPath + '/output/' + self.programName + '/'
+        if not os.path.exists(self.outputFileDirPath):
+            os.makedirs(self.outputFileDirPath)
+        self.dataTrainDirPath   = self.datasetDirPath + '/train'
+
 
     def csvReader(self,filepath):
         filecsv = open(filepath, 'rb')
@@ -19,6 +30,7 @@ class OsHandler:
     def alertCsvReader(self,filepath,filename):
         alerts = []
         reader = self.csvReader(filepath)
+        # print reader
         for row in reader:
             alert = Alert(row[1], #timestamp
                         row[2], #ip_dst
@@ -35,40 +47,29 @@ class OsHandler:
             alerts.append(alert)
         return alerts
 
-    # def dataTrainReader(self,):
-    #     path = self.datasetDirPath + "/datatrain.csv"
-    #     # print path dataset/LLDOS-1/datatrain.csvd
-    #     reader = self.csvReader(path)
-       
-    #     npArray = []
-    #     yList   = []
-    #     for row in reader:
-    #         xList = []
-    #         xList.append(row[0])
-    #         xList.append(row[1])
-    #         xList.append(row[2])
-    #         xList.append(row[3])
-    #         xList.append(row[4])
-    #         xList.append(row[5])
-    #         yList.append(row[6])
-    #         npArray.append(xList)
-        
-    #     # print npArray
-    #     # print yList
-    #     for i in range(len(yList)):
-    #         print npArray[i]
-    #         print yList[i]
-    #     return 0
-    #     # self
+    def dataTrainReader(self):
+
+        path    = self.dataTrainDirPath + '/datatrain.csv'
+        reader  = self.csvReader(path)
+        output  = "\nInput data train dari "+path
+        print output
+        return reader
 
     def getAlertinDataset(self):
+
+        output = "Input dataset alert di "+ self.alertDirPath
+        print output + "\n"
+
         alerts = []
-        for dirname, dirnames, filenames in os.walk(self.datasetDirPath):
+        for dirname, dirnames, filenames in os.walk(self.alertDirPath):
                 
             for filename in filenames:
                 filePath = os.path.join(dirname, filename)
                 fileName = filename.split('.')[0]
                 
+                output = "input "+filename
+                print output
+
                 tempAlerts = []
                 tempAlerts = self.alertCsvReader(filePath,fileName)
                 for x in range(len(tempAlerts)):
@@ -79,8 +80,11 @@ class OsHandler:
         
         timeSortedAlerts = sorted(alerts, key=lambda alert: alert.timestamp)
 
-        path = self.outputFileLocation + "-alerts.txt"
-            
+        for i in range(len(timeSortedAlerts)):
+            timeSortedAlerts[i].setId(i+1)
+
+        path = self.outputFileDirPath + 'alerts.txt'
+        # print self.outputFileDirPath
         outputFile =  open(path,"wb")
 
         output = "Id,timestamp,ip_dst,ip_src,icmp_status,icmp_type,tcp_dport,tcp_sport,udp_dport,udp_sport,sig_name,sig_class_name,phase"
@@ -89,6 +93,12 @@ class OsHandler:
             timeSortedAlerts[i].setId(i+1)
             output = str(timeSortedAlerts[i].alertId)+","+str(timeSortedAlerts[i].timestamp)+","+str(timeSortedAlerts[i].ip_dst)+","+str(timeSortedAlerts[i].ip_src)+","+str(timeSortedAlerts[i].icmp_status)+","+str(timeSortedAlerts[i].icmp_type)+","+str(timeSortedAlerts[i].tcp_dport)+","+str(timeSortedAlerts[i].tcp_sport)+","+str(timeSortedAlerts[i].udp_dport)+","+str(timeSortedAlerts[i].udp_sport)+","+str(timeSortedAlerts[i].sig_name)+","+str(timeSortedAlerts[i].sig_class_name)+","+str(timeSortedAlerts[i].phase)+"\n"
             outputFile.write(output)
+
+        print "\nBerhasil input alert"
+        output = "Jumlah alert yang di baca : " + str(len(timeSortedAlerts))
+        print output
+        output = "Data alert yang diinputkan tersimpan di " + path
+        print output
 
         outputFile.close()
 

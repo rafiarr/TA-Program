@@ -45,11 +45,16 @@ for row in reader:
 
 # print time.localtime(952386696.0)
 # print time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(952386696.0))
-firstList = [1,2,3,4]
+# firstList = [1,2,3,4]
 
-newList = []
+# newList = []
 
-newList.append(firstList[2])
+# newList.append(firstList[2])
 
-print newList
+# print newList
 
+
+testList = ['rafiar','rina','nafiar']
+name = 'rina'
+if((name in testList) == True):
+    print testList.index(name)
