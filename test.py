@@ -5,6 +5,7 @@ import time
 from alert import *
 from oshandler import *
 from classificationhandler import *
+from graphdrawer import *
 
 def testAlert():
     alert1 = Alert("2000-03-07 06:51:36","172.16.115.1","202.77.162.213","Ya","8","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP PING","misc-activity","test")
@@ -58,9 +59,7 @@ def testOsHandler():
             correlation = AlertCorrelation(alerts[i],alerts[j])
             alert1 = correlation.alert1.sig_name
             alert2 = correlation.alert2.sig_name
-            
-
-            
+             
             correlationValues = correlation.getValues()
             
             # print correlationValues
@@ -90,8 +89,18 @@ def testOsHandler():
     for row in acm.causalityMatrix:
         print row
 
-    acm.getRelatedList() 
+    relatedList = acm.getRelatedList() 
+    edgeList = []
+    labelList = []
+    for row in relatedList:
+        edgeList.append(row.keys()[0])
+        labelList.append(row.values()[0])
+    
+    graphDrawer = GraphDrawer(edgeList,labelList)
+    print graphDrawer.graph 
+    print graphDrawer.labels
 
+    graphDrawer.draw_graph()
 # def testSVM():
 #     os = OsHandler('dataset/LLDOS-1','test')
 #     svmHandler = SVMHandler('dataset/LLDOS-1/datatrain.csv')

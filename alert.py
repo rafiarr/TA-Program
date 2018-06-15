@@ -245,15 +245,12 @@ class AlertCausalityMatrix:
                 alert2 = self.alertList[j]
                 forwardCorrelation = self.calculateForwardCorrelationStrength(alert1,alert2)
                 if(maxValue - forwardCorrelation <= 0.3 and forwardCorrelation != 0):
-                    edge = {'alert1': alert1,
-                            'alert2': alert2,
-                            'strength': forwardCorrelation}
+                    edge = {(alert1,alert2):forwardCorrelation}
                     edgeList.append(edge)
                 output = "maxValue : "+str(maxValue)+" FCStrength : "+str(forwardCorrelation)+"\n"
                 # print output
 
-        for edge in edgeList:
-            print edge
+        return edgeList
 
 # "1","2000-03-07 06:51:36","172.16.115.1","202.77.162.213","Ya","8","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP PING","misc-activity"
 # "2","2000-03-07 06:51:36","202.77.162.213","172.16.115.1","Ya","0","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP Echo Reply","misc-activity"
