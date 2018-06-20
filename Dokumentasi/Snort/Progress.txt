@@ -1,0 +1,17 @@
+
+
+Instalasi :
+- Referensi : Snort_2.9.9.x_on_Ubuntu_14-16.pdf
+- Sistem : Ubuntu 16.04, memory 512 MB, Processor laptop
+
+Progress :
+- Install pre-requisites
+- Install DAQ
+- Install Snort : snort -V 
+- Test simple rule SNORT :
+    - /etc/snort/sid-msg.map -- X
+    - https://blog.rapid7.com/2017/01/11/how-to-install-snort-nids-on-ubuntu-linux/ -- local rule ping 
+- Install Barnyard2 (tahapan) :
+    - Download
+    - Install
+
