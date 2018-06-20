@@ -11,7 +11,13 @@ Progress :
 - Test simple rule SNORT :
     - /etc/snort/sid-msg.map -- X
     - https://blog.rapid7.com/2017/01/11/how-to-install-snort-nids-on-ubuntu-linux/ -- local rule ping 
+    - 
+
+
 - Install Barnyard2 (tahapan) :
     - Download
     - Install
-
+- Install Pulled Pork
+- Play tcpdump ke snort : sudo snort -r LLS_DDOS_1.0-inside.dump -c /etc/snort/lldos1.conf
+    - Ngebuat snort conf baru, lldos1.conf, lldos2.conf -> output file yang beda
+- Barnyard masukin ke mysql :
