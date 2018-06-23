@@ -1,0 +1,12 @@
+Dataset :
+- Snort dump tcpdump, generate alert (snort using tcpdump file) --- bangsat
+- Update Rule Snort --- bangsat
+- Barnyard output ke mysql
+- Dump LLDOS 2
+- Analisis dataset
+
+
+Program :
+- Benerin Algo Alert Correlation (Ubah pake predict proba)
+
+Output :

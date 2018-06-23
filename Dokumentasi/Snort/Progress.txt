@@ -20,4 +20,5 @@ Progress :
 - Install Pulled Pork
 - Play tcpdump ke snort : sudo snort -r LLS_DDOS_1.0-inside.dump -c /etc/snort/lldos1.conf
     - Ngebuat snort conf baru, lldos1.conf, lldos2.conf -> output file yang beda
-- Barnyard masukin ke mysql :
+- Barnyard masukin ke mysql : sudo barnyard2 -c /etc/snort/lldos1-barnyard.conf -d /var/log/snort -f lldos1.u2
+    - Buat barnyard conf baru, lldos1-barnyard.conf, lldos2-barnyard.conf -> output database beda
