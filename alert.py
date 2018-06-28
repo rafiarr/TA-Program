@@ -44,6 +44,34 @@ class Alert:
     def setId(self,newId):
         self.alertId = newId
 
+class Alert2:
+    alertId         = 0
+    timestamp       = ''
+    ip_dst          = ''
+    port_dst        = ''
+    ip_src          = ''
+    port_src        = ''
+    sig_name        = ''
+    def __init__(self,file_timestamp,file_sig_name,file_ip_src,file_port_src,file_ip_dst,file_port_dst):
+        self.timestamp  = file_timestamp
+        self.sig_name   = file_sig_name
+        self.ip_src     = file_ip_src
+        self.port_src   = file_port_src
+        self.ip_dst     = file_ip_dst
+        self.port_dst   = file_ip_dst
+    
+    def setId(self,newId):
+        self.alertId = newId
+
+    def printAll(self):
+    
+        output = str(self.timestamp) +','+str(self.sig_name)+','+str(self.ip_src)+','+str(self.ip_dst)
+        print output
+
+        
+
+
+
 class AlertCorrelation:
     alert1      = []
     alert2      = []

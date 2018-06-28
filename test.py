@@ -112,9 +112,24 @@ def testOsHandler():
 #     return 0
 
 
+def testNewDataset():
+    os = OsHandler('dataset/LLDOS-1.0/alert','test')
+    alerts = os.getAlertinDataset2('dataset/LLDOS-1.0/alert')
+    
+    alertList = []
+
+    for i in range(len(alerts)):
+        if( (alerts[i].sig_name in alertList) == False):
+            alertList.append(alerts[i].sig_name)
+            print alerts[i].sig_name
+    
+    
+
+    # trainReader = os.dataTrainReader()
 def main():
     # testAlert()
     testOsHandler()
+    # testNewDataset()
     # testSVM()
 
     # testValue = ["rafiar","nafiar","rina"]
