@@ -1,5 +1,6 @@
 from __future__ import division
 import time
+from datetime import datetime
 
 class Alert:
     alertId         = 0
@@ -58,7 +59,7 @@ class Alert2:
         self.ip_src     = file_ip_src
         self.port_src   = file_port_src
         self.ip_dst     = file_ip_dst
-        self.port_dst   = file_ip_dst
+        self.port_dst   = file_port_dst
     
     def setId(self,newId):
         self.alertId = newId
@@ -148,8 +149,8 @@ class AlertCorrelation:
         return self.compareIP(ip_dst1,ip_dst2)/32        
 
     def calculateF3(self):
-        src_port1 = self.getSrcPortNumber(self.alert1)
-        src_port2 = self.getSrcPortNumber(self.alert2)
+        src_port1 = self.alert1.port_dst
+        src_port2 = self.alert2.port_dst
         return self.compareNumber(src_port1,src_port2)
 
     def calculateF4(self):
@@ -167,12 +168,12 @@ class AlertCorrelation:
 
     
     def calculateF6(self):
-        time1 = self.alert1.timestamp
-        time1 = time.mktime(time.strptime(time1, "%Y-%m-%d %H:%M:%S"))
+        time1 = self.alert1.timestamp.split('.')[0]
+        time1 = time.mktime(time.strptime(time1, "%m/%d-%H:%M:%S"))
         # print "alert1 : "+str(time1)
 
-        time2 = self.alert2.timestamp
-        time2 = time.mktime(time.strptime(time2, "%Y-%m-%d %H:%M:%S"))
+        time2 = self.alert2.timestamp.split('.')[0]
+        time2 = time.mktime(time.strptime(time2, "%m/%d-%H:%M:%S"))
         # print "alert2 : "+str(time2)
 
         deltaTime = abs(time1-time2)
@@ -282,3 +283,12 @@ class AlertCausalityMatrix:
 
 # "1","2000-03-07 06:51:36","172.16.115.1","202.77.162.213","Ya","8","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP PING","misc-activity"
 # "2","2000-03-07 06:51:36","202.77.162.213","172.16.115.1","Ya","0","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP Echo Reply","misc-activity"
+
+# 03/07-11:33:29.223090
+# time.mktime(time.strptime(time1, "%m/%d-%H:%M:%S"))
+# time1 = '03/07-11:33:29.223090'
+# time1 = time1.split('.')[0]
+
+# newtime = time.mktime(time.strptime(time1, "%m/%d-%H:%M:%S"))
+# newtime2 = time.mktime(time.strptime('03/07-11:33:30', "%m/%d-%H:%M:%S"))
+# print abs(newtime2 - newtime)

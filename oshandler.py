@@ -144,9 +144,76 @@ class OsHandler:
 
         return timeSortedAlerts
 
-def testData():
-    os = OsHandler('dataset/LLDOS-1.0','test')
-    os.getAlertinDataset2('dataset/LLDOS-1.0/alert')
+class OSHandler:
 
+    # def __init__(self):
+    #     print "OS Handler"
+
+    def csvReader(self,filepath):
+        filecsv = open(filepath, 'rb')
+        reader = csv.reader(filecsv)
+        filecsv.close
+        return reader
+
+    def alertCsvReader(self,filepath):
+        alerts = []
+        reader = self.csvReader(filepath)
+        for row in reader:
+            alert = Alert2(row[0],
+                        row[1],
+                        row[2],
+                        row[3],
+                        row[4],
+                        row[5])
+            alerts.append(alert)
+        return alerts
+
+    def dataTrainReader(self,dataTrainDirPath):
+
+        path    = dataTrainDirPath + 'datatrain.csv'
+        reader  = self.csvReader(path)
+        output  = "\nInput data train dari "+path
+        print output
+        return reader
+    
+    def getAlertinDataset(self,datasetPath):
+
+        timeSortedAlerts = []
+
+        alerts = []
+        for dirname, dirnames, filenames in os.walk(datasetPath):
+                
+            for filename in filenames:
+                filePath = os.path.join(dirname, filename)
+                
+                tempAlerts = self.alertCsvReader(filePath)
+                for alert in tempAlerts:
+                    alerts.append(alert)
+
+            if '.git' in dirnames:
+                dirnames.remove('.git')
+
+        timeSortedAlerts = sorted(alerts, key=lambda alert: alert.timestamp)
+        
+        for i in range(len(timeSortedAlerts)):
+            timeSortedAlerts[i].setId(i+1)
+            if(timeSortedAlerts[i].port_dst == ''):
+                timeSortedAlerts[i].port_dst = 0
+            if(timeSortedAlerts[i].port_src == ''):
+                timeSortedAlerts[i].port_src = 0
+
+
+        # for alert in timeSortedAlerts:
+        #     alert.printAll()
+
+        return timeSortedAlerts
+    
+
+
+def testData():
+    os = OSHandler()
+    timesortedalerts = os.getAlertinDataset('dataset/lldos1/')
+    os.dataTrainReader('dataset/DataTrain/')
+    
 if __name__ == '__main__' :
     testData()

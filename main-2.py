@@ -9,9 +9,9 @@ from graphdrawer import *
 
 def main():
     
-    os = OsHandler('dataset/LLDOS-1','test')
+    os = OSHandler()
     
-    alerts = os.getAlertinDataset()
+    alerts = os.getAlertinDataset('dataset/lldos2/')
     
     alertList = []
 
@@ -19,15 +19,15 @@ def main():
         if( (alerts[i].sig_name in alertList) == False):
             alertList.append(alerts[i].sig_name)
     
-    trainReader = os.dataTrainReader()
+    trainReader = os.dataTrainReader('dataset/DataTrain/')
 
     svmHandler = SVMHandler(trainReader)
 
     acm = AlertCausalityMatrix(alertList)
 
     # count = 0
-    path = os.outputFileDirPath + "correlated-value.txt"
-    outputFile = open(path,"wb")
+    # path = os.outputFileDirPath + "correlated-value.txt"
+    # outputFile = open(path,"wb")
     
     output = "Hasil correlation"
     count = 0
@@ -46,8 +46,8 @@ def main():
             # print "prediction : " + str(svmHandler.predict(correlationValues))
             if(svmHandler.predict(correlationValues) == '1'):
                 acm.incrementACMValue(alert1,alert2)
-                output = alert1 + "," +alert2+" : "+str(correlationValues)+"\n"
-                outputFile.write(output)
+                # output = alert1 + "," +alert2+" : "+str(correlationValues)+"\n"
+                # outputFile.write(output)
                 count = count +1
             # else:
                 
@@ -60,7 +60,7 @@ def main():
 
         # if(count == 5):
         #     break,.
-    outputFile.close()
+    # outputFile.close()
     print count
     print "selesai alert correlation"
     print "--- "+str(time.time() - start_time) +" seconds ---"
