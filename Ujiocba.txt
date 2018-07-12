@@ -1,0 +1,25 @@
+Bagian Uji Coba :
+- Kumpulkan data tcpdump dari dataset DARPA LLDOS 1.0 :
+    - inside-phase-1-tcpdump-out-dump  
+    - inside-phase-2-tcpdump-out-dump
+    - inside-phase-3-tcpdump-out-dump
+    - inside-phase-4-tcpdump-out-dump    
+    - inside-phase-5-tcpdump-out-dump
+    - outside-phase-1-tcpdump-out-dump  
+    - outside-phase-2-tcpdump-out-dump
+    - outside-phase-3-tcpdump-out-dump
+    - outside-phase-4-tcpdump-out-dump
+    - outside-phase-5-tcpdump-out-dump  
+- Kumpulkan data tcpdump dari dataset DARPA LLDSO 2.0 :
+    - inside-phase-1-dump  
+    - inside-phase-2-dump
+    - inside-phase-3-dump  
+    - inside-phase-4-dump
+    - inside-phase-5-dump  
+    - outside-phase-1-dump 
+    - outside-phase-2-dump
+    - outside-phase-3-dump  
+    - outside-phase-4-dump
+    - outside-phase-5-dump
+- Tulisin sintaksnya buat generate alert dari file tcpdump
+- Tunjukin hasil run programnya, tambahin print banyak alert yang di baca, alert yang masuk apa aja, simpen matriks ACMnya, simpen list grafnya

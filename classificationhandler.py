@@ -45,6 +45,14 @@ class SVMHandler:
         # print y
         return y
 
+    def predictProba(self,tempList):
+        xList = []
+        xList.append(tempList)
+        # xList = np.array(xList)
+        y = self.clf.predict_proba(xList)
+        # print y
+        return y
+
     # def readDataTrain(self,reader):
         
     #     xList = []

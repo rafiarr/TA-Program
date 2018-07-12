@@ -139,6 +139,8 @@ class OsHandler:
         for i in range(len(timeSortedAlerts)):
             timeSortedAlerts[i].setId(i+1)
 
+        output = 'Banyak alert yang dibaca :' + str(len(timeSortedAlerts))
+        print output
         # for alert in timeSortedAlerts:
         #     alert.printAll()
 
@@ -186,6 +188,10 @@ class OSHandler:
             for filename in filenames:
                 filePath = os.path.join(dirname, filename)
                 
+                substr = filename.split('-')
+                # for row in substr:
+                print substr     
+
                 tempAlerts = self.alertCsvReader(filePath)
                 for alert in tempAlerts:
                     alerts.append(alert)
@@ -208,7 +214,21 @@ class OSHandler:
 
         return timeSortedAlerts
     
+    def printArray(self,outputPath,printArray):
+        
+        outputFile = open(outputPath,"wb")
 
+        for row in printArray:
+            for column in row:
+                outputFile.write(column)
+        
+        outputFile.close()
+
+    def createDirectory(self,directorypath):
+        
+        if not os.path.exists(directorypath):
+            os.mkdir(directorypath)
+            print "output path = "+directorypath+'\n'
 
 def testData():
     os = OSHandler()

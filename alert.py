@@ -238,6 +238,13 @@ class AlertCausalityMatrix:
         index2 = self.getAlertIndex(alert2)
         if (index1 != -1 and index2 != -1):
             self.causalityMatrix[index1][index2] = self.causalityMatrix[index1][index2] + 1
+    
+    def incrementACMProbaValue(self,alert1,alert2,value):
+        
+        index1 = self.getAlertIndex(alert1)
+        index2 = self.getAlertIndex(alert2)
+        if (index1 != -1 and index2 != -1):
+            self.causalityMatrix[index1][index2] = self.causalityMatrix[index1][index2] + value
 
     def calculateAllSigmaValue(self):
         
@@ -280,6 +287,42 @@ class AlertCausalityMatrix:
                 # print output
 
         return edgeList
+
+class HyperAlert:
+    alertList   = []
+    edgeList    = []
+
+    def __init__(self):
+        self.alertList  = []
+        self.edgeList   = []
+        print "Inisiasi Hyper Alert Graf"
+    
+    def isAlertnotEmpty(self):
+        if len(self.alertList != 0):
+            return 1
+        else:
+            return 0
+
+    def getAlertList(self):
+        return self.alertList
+    
+    def insertNewHyperAlert(self,newAlert):
+        if self.isAlertnotEmpty() == 0:
+            alert = (newAlert.alertId,newAlert.sig_name)
+            self.alertList.append(alert)
+        else:
+            existFlag = 0
+            for alert in self.alertList:
+                print alert
+                if(alert[0] == newAlert.alertId):
+                    existFlag = 1
+            if existFlag == 0:
+                alert = (newAlert.alertId,newAlert.sig_name)
+                self.alertList.append(alert)
+
+    def insertEgdeList(self, alert1, alert2, probability):
+        edge = (alert1,alert2,probability)
+        self.edgeList.append(edge)
 
 # "1","2000-03-07 06:51:36","172.16.115.1","202.77.162.213","Ya","8","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP PING","misc-activity"
 # "2","2000-03-07 06:51:36","202.77.162.213","172.16.115.1","Ya","0","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP Echo Reply","misc-activity"

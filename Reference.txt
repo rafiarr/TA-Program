@@ -1,0 +1,1 @@
+Penjelasan rule snort : https://www.youtube.com/watch?v=S9J4SpbeJJE

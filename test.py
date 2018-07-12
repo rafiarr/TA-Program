@@ -28,110 +28,145 @@ def testAlert():
     # print "F6 : "+str(f6)
     return fValue
 
-def testOsHandler():
-    os = OsHandler('dataset/LLDOS-1','test')
+# def testOsHandler():
+#     # os = OsHandler('dataset/LLDOS-1','test')
     
-    alerts = os.getAlertinDataset()
+#     alerts = os.getAlertinDataset()
     
-    alertList = []
+#     alertList = []
 
-    for i in range(len(alerts)):
-        if( (alerts[i].sig_name in alertList) == False):
-            alertList.append(alerts[i].sig_name)
+#     for i in range(len(alerts)):
+#         if( (alerts[i].sig_name in alertList) == False):
+#             alertList.append(alerts[i].sig_name)
     
-    trainReader = os.dataTrainReader()
+#     trainReader = os.dataTrainReader()
 
-    svmHandler = SVMHandler(trainReader)
+#     svmHandler = SVMHandler(trainReader)
 
-    acm = AlertCausalityMatrix(alertList)
+#     acm = AlertCausalityMatrix(alertList)
 
-    # count = 0
-    path = os.outputFileDirPath + "correlated-value.txt"
-    outputFile = open(path,"wb")
+#     # count = 0
+#     path = os.outputFileDirPath + "correlated-value.txt"
+#     outputFile = open(path,"wb")
     
-    output = "Hasil correlation"
-    count = 0
+#     output = "Hasil correlation"
+#     count = 0
 
-    start_time = time.time()
+#     start_time = time.time()
 
-    for i in range(len(alerts)):
-        for j in range(len(alerts)):
-            correlation = AlertCorrelation(alerts[i],alerts[j])
-            alert1 = correlation.alert1.sig_name
-            alert2 = correlation.alert2.sig_name
+#     for i in range(len(alerts)):
+#         for j in range(len(alerts)):
+#             correlation = AlertCorrelation(alerts[i],alerts[j])
+#             alert1 = correlation.alert1.sig_name
+#             alert2 = correlation.alert2.sig_name
              
-            correlationValues = correlation.getValues()
+#             correlationValues = correlation.getValues()
             
-            # print correlationValues
-            # print "prediction : " + str(svmHandler.predict(correlationValues))
-            if(svmHandler.predict(correlationValues) == '1'):
-                acm.incrementACMValue(alert1,alert2)
-                output = alert1 + "," +alert2+" : "+str(correlationValues)+"\n"
-                outputFile.write(output)
-                count = count +1
-            # else:
+#             # print correlationValues
+#             # print "prediction : " + str(svmHandler.predict(correlationValues))
+#             if(svmHandler.predict(correlationValues) == '1'):
+#                 acm.incrementACMValue(alert1,alert2)
+#                 output = alert1 + "," +alert2+" : "+str(correlationValues)+"\n"
+#                 outputFile.write(output)
+#                 count = count +1
+#             # else:
                 
-                # print alert1
-                # print alert2
+#                 # print alert1
+#                 # print alert2
 
-            # count = count+1
-            # if(count == 5):
-            #     break
+#             # count = count+1
+#             # if(count == 5):
+#             #     break
 
-        # if(count == 5):
-        #     break,.
-    outputFile.close()
-    print count
-    print "selesai alert correlation"
-    print "--- "+str(time.time() - start_time) +" seconds ---"
+#         # if(count == 5):
+#         #     break,.
+#     outputFile.close()
+#     print count
+#     print "selesai alert correlation"
+#     print "--- "+str(time.time() - start_time) +" seconds ---"
 
-    acm.calculateAllSigmaValue()
-    for row in acm.causalityMatrix:
-        print row
+#     acm.calculateAllSigmaValue()
+#     for row in acm.causalityMatrix:
+#         print row
 
-    relatedList = acm.getRelatedList() 
-    edgeList = []
-    labelList = []
-    for row in relatedList:
-        edgeList.append(row.keys()[0])
-        labelList.append(row.values()[0])
+#     relatedList = acm.getRelatedList() 
+#     edgeList = []
+#     labelList = []
+#     for row in relatedList:
+#         edgeList.append(row.keys()[0])
+#         labelList.append(row.values()[0])
     
-    graphDrawer = GraphDrawer(edgeList,labelList)
-    print graphDrawer.graph 
-    print graphDrawer.labels
+#     graphDrawer = GraphDrawer(edgeList,labelList)
+#     print graphDrawer.graph 
+#     print graphDrawer.labels
 
-    graphDrawer.draw_graph()
-# def testSVM():
-#     os = OsHandler('dataset/LLDOS-1','test')
-#     svmHandler = SVMHandler('dataset/LLDOS-1/datatrain.csv')
-#     data = os.csvReader(svmHandler.dataTrainPath)
-#     svmHandler.readDataTrain(data)
-#     fValue = testAlert()
-#     print svmHandler.predict(fValue)
-#     # print fValu
-#     return 0
+#     graphDrawer.draw_graph()
+# # def testSVM():
+# #     os = OsHandler('dataset/LLDOS-1','test')
+# #     svmHandler = SVMHandler('dataset/LLDOS-1/datatrain.csv')
+# #     data = os.csvReader(svmHandler.dataTrainPath)
+# #     svmHandler.readDataTrain(data)
+# #     fValue = testAlert()
+# #     print svmHandler.predict(fValue)
+# #     # print fValu
+# #     return 0
 
 
-def testNewDataset():
-    os = OsHandler('dataset/LLDOS-1.0/alert','test')
-    alerts = os.getAlertinDataset2('dataset/LLDOS-1.0/alert')
+# def testNewDataset():
+#     # os = OsHandler('dataset/LLDOS-1.0/alert','test')
+#     alerts = os.getAlertinDataset2('dataset/LLDOS-1.0/alert')
     
-    alertList = []
+#     alertList = []
 
-    for i in range(len(alerts)):
-        if( (alerts[i].sig_name in alertList) == False):
-            alertList.append(alerts[i].sig_name)
-            print alerts[i].sig_name
+#     for i in range(len(alerts)):
+#         if( (alerts[i].sig_name in alertList) == False):
+#             alertList.append(alerts[i].sig_name)
+#             print alerts[i].sig_name
     
-    
+
+
+def testtime():
+    # strftime("%a, %d %b %Y %H:%M:%S", gmtime())
+    currentTime = time.strftime("%a,%d%b%Y-%H:%M:%S", time.gmtime())
+    outputPath = 'output/' + currentTime + '/'
+    if not os.path.exists(outputPath):
+        os.mkdir(outputPath)
+        if os.path.exists(outputPath):
+            print 'done'
+
+    outputArray = []
+    outputRow = []
+    outputRow.append("coba output")
+    outputRow.append("\n")
+    outputArray.append(outputRow)
+    outputRow = []
+    outputRow.append("coba output, ")
+    outputRow.append("coba output, ")
+    outputRow.append("coba output")
+    outputRow.append("\n")
+    outputArray.append(outputRow)
+
+    outputFile = outputPath + 'tes.txt'
+
+    osHandler = OSHandler()
+    osHandler.printArray(outputFile,outputArray)
 
     # trainReader = os.dataTrainReader()
+def testArray():
+    array = []
+    for i in range(1597):
+        for j in range(1597):
+            column = [1,1,1,1,1,1]
+            array.append(column)
+    print "berhasil"
+
 def main():
     # testAlert()
-    testOsHandler()
+    # testOsHandler()
+    testtime()
     # testNewDataset()
     # testSVM()
-
+    # testArray()
     # testValue = ["rafiar","nafiar","rina"]
     # train = "sekbay"
     # train2 = "rafiar"
