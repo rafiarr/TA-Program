@@ -6,6 +6,8 @@ from alert import *
 from oshandler import *
 from classificationhandler import *
 from graphdrawer import *
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
 
 def testAlert():
     alert1 = Alert("2000-03-07 06:51:36","172.16.115.1","202.77.162.213","Ya","8","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP PING","misc-activity","test")
@@ -160,10 +162,62 @@ def testArray():
             array.append(column)
     print "berhasil"
 
+def testMLP():
+
+    currentTime = time.strftime("%a,%d%b%Y-%H:%M:%S", time.gmtime())
+    
+    # Buat folder + file output, file output alert, file output fitur, file output acm, file output graf path
+    outputPath      = 'output/' + currentTime+'/'
+    fileOutputAlert = outputPath + 'alert.txt'
+    fileFiturAlert  = outputPath + 'fitur.txt'
+    fileTabelAcm    = outputPath + 'acm.txt'
+    fileGraf        = outputPath + 'graf.txt'
+
+    # Inisiasi osHandler, buat folder
+    osHandler = OSHandler()
+    osHandler.createDirectory(outputPath)
+    trainReader = osHandler.dataTrainReader('dataset/DataTrain/datatrain2.csv')
+    reader = trainReader
+    xList = []
+    yListSVM = []
+    yListMLP = []
+    for row in reader:
+
+        tempList = []
+        tempList.append(float(row[0]))
+        tempList.append(float(row[1]))
+        tempList.append(float(row[2]))
+        tempList.append(float(row[3]))
+        tempList.append(float(row[4]))
+        tempList.append(float(row[5]))
+        yListSVM.append(row[6])
+        yListMLP.append(float(row[7]))
+        xList.append(tempList)
+
+    output = "Data train : "
+    print output
+
+    X = np.array(xList)
+    y = np.array(yListMLP) 
+    ySVM = yListSVM
+    yMLP = yListMLP
+    
+    for i in range(len(X)):
+        print str(X[i]) + ", " + str(ySVM[i])+ ", " + str(yMLP[i])
+    print xList
+    print X
+    clfSVM = svm.SVC(probability=True,class_weight={'1':13,'-1':5},random_state=5)
+    clfSVM.fit(X,ySVM)
+
+    clfMLP = MLPClassifier(solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(6,1),random_state=1)
+    clfMLP.fit(X,yMLP)
+    # scaler = StandardScaler()
+
 def main():
     # testAlert()
     # testOsHandler()
-    testtime()
+    # testtime()
+    testMLP()
     # testNewDataset()
     # testSVM()
     # testArray()

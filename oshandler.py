@@ -172,7 +172,7 @@ class OSHandler:
 
     def dataTrainReader(self,dataTrainDirPath):
 
-        path    = dataTrainDirPath + 'datatrain.csv'
+        path    = dataTrainDirPath
         reader  = self.csvReader(path)
         output  = "\nInput data train dari "+path
         print output
@@ -182,15 +182,17 @@ class OSHandler:
 
         timeSortedAlerts = []
 
+        alertList = []
+
         alerts = []
         for dirname, dirnames, filenames in os.walk(datasetPath):
                 
             for filename in filenames:
                 filePath = os.path.join(dirname, filename)
-                
+                 
                 substr = filename.split('-')
                 # for row in substr:
-                print substr     
+                # print substr     
 
                 tempAlerts = self.alertCsvReader(filePath)
                 for alert in tempAlerts:
@@ -229,6 +231,92 @@ class OSHandler:
         if not os.path.exists(directorypath):
             os.mkdir(directorypath)
             print "output path = "+directorypath+'\n'
+
+    def getAlertinDataset2(self,datasetPath):
+
+        timeSortedAlerts = []
+
+        alertList = []
+
+        alerts = []
+        for dirname, dirnames, filenames in os.walk(datasetPath):
+                
+            for filename in filenames:
+                filePath = os.path.join(dirname, filename)
+                 
+                substr = filename.split('-')
+                # for row in substr:
+                # print substr     
+
+                tempAlerts = self.alertCsvReader(filePath)
+                for alert in tempAlerts:
+                    if alert.sig_name != 'BAD-TRAFFIC loopback traffic':
+                        alerts.append(alert)
+
+            if '.git' in dirnames:
+                dirnames.remove('.git')
+
+        timeSortedAlerts = sorted(alerts, key=lambda alert: alert.timestamp)
+        
+        for i in range(len(timeSortedAlerts)):
+            timeSortedAlerts[i].setId(i+1)
+            if(timeSortedAlerts[i].port_dst == ''):
+                timeSortedAlerts[i].port_dst = 0
+            if(timeSortedAlerts[i].port_src == ''):
+                timeSortedAlerts[i].port_src = 0
+
+
+        # for alert in timeSortedAlerts:
+        #     alert.printAll()
+
+        return timeSortedAlerts
+
+    def getAlertinDataset3(self,datasetPath):
+
+        timeSortedAlerts = []
+        alertFilenames = []
+        alertLists = []
+        count = [1,2,3,4,5]
+        alerts = []
+        for dirname, dirnames, filenames in os.walk(datasetPath):
+                
+            for filename in filenames:
+                filePath = os.path.join(dirname, filename)
+                
+                substr = filename.split('-')
+                # for row in substr:
+                #     # print substr
+                #     # if(substr in count):
+                        
+                newAlertList = AlertList()
+                tempAlerts = self.alertCsvReader(filePath)
+                for alert in tempAlerts:
+                    # if alert.sig_name != 'BAD-TRAFFIC loopback traffic':
+                    alerts.append(alert)
+                    newAlertList.insertNewAlert(alert)
+                # print filename
+                # alertList = newAlertList.getAlertTypeList()
+                # print alertList
+                alertLists.append(newAlertList)
+                alertFilenames.append(filename)
+
+            if '.git' in dirnames:
+                dirnames.remove('.git')
+
+        timeSortedAlerts = sorted(alerts, key=lambda alert: alert.timestamp)
+        
+        for i in range(len(timeSortedAlerts)):
+            timeSortedAlerts[i].setId(i+1)
+            if(timeSortedAlerts[i].port_dst == ''):
+                timeSortedAlerts[i].port_dst = 0
+            if(timeSortedAlerts[i].port_src == ''):
+                timeSortedAlerts[i].port_src = 0
+
+
+        # for alert in timeSortedAlerts:
+        #     alert.printAll()
+
+        return timeSortedAlerts, alertLists, alertFilenames
 
 def testData():
     os = OSHandler()

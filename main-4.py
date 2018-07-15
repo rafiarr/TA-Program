@@ -8,15 +8,23 @@ from oshandler import *
 from classificationhandler import *
 from graphdrawer import *
 
-def calculateCorrelationProbability(alerti,alertj,svmHandler):
-    correlation = AlertCorrelation(alerti,alertj)
+def calculateCorrelationProbability(alerti,alertj,classificationHandler,acm):
+    correlation = FeatureExtractor(alerti,alertj)
     alert1 = correlation.alert1.sig_name
     alert2 = correlation.alert2.sig_name
 
-    correlationValues = correlation.getValues()
+    if (acm.getACMValue(alert1,alert2) != 0):
+        correlation.setF5(float(acm.calculateBackwardCorrelationStrength(alert1,alert2)))
+        # print 'masuk'
+    else:
+        correlation.setF5(correlation.calculateF5())
+        
 
-    probaValue = svmHandler.predictProba(correlationValues)
-    classValue = svmHandler.predict(correlationValues)
+    correlationValues = correlation.getValues()
+    print correlationValues
+
+    probaValue = classificationHandler.predictProba(correlationValues)
+    classValue = classificationHandler.predict(correlationValues)
     return probaValue[0][0]
 
 def main():
@@ -36,8 +44,8 @@ def main():
     osHandler.createDirectory(outputPath)
 
     # Baca file alert, simpen di variable alerts
-    alerts = osHandler.getAlertinDataset('dataset/lldos2/')
-    
+    alerts = osHandler.getAlertinDataset('dataset/LLDOS-1.0/')
+    print len(alerts)
     # Dapetin jenis alert yang ada di dataset
     # Siapin yang mau di print ke file
     outputArray = []
@@ -62,9 +70,9 @@ def main():
     osHandler.printArray(fileOutputAlert,outputArray)
     outputArray = []
 
-    # Inisiasi class SVMHandler buat model klasifikasi SVM
-    trainReader = osHandler.dataTrainReader('dataset/DataTrain/')
-    svmHandler = SVMHandler(trainReader)
+    # Inisiasi class classificationHandler buat model klasifikasi SVM
+    trainReader = osHandler.dataTrainReader('dataset/DataTrain/datatrain.csv')
+    classificationHandler = SVMHandler(trainReader)
     
     # Inisiasi tabel ACM
     acm = AlertCausalityMatrix(alertList)
@@ -79,83 +87,94 @@ def main():
 
     edgeList = []
 
-    hypertAlert = HyperAlert()
+    hyperAlert = HyperAlert()
 
-    for i in range(len(alerts)):
-        for j in range(i):
+    # i = 10
+
+    # print range(i)
+
+    for j in range(len(alerts)):
+        for i in range(j):
             if j == i:
                 continue
             else:
-                correlationProbability = calculateCorrelationProbability(alerts[i],alerts[j],svmHandler)
-                print round(correlationProbability,2)
-                # correlation = AlertCorrelation(alerts[i],alerts[j])
-                # alert1 = correlation.alert1.sig_name
-                # alert2 = correlation.alert2.sig_name
+                correlationProbability = calculateCorrelationProbability(alerts[i],alerts[j],classificationHandler,acm)
                 
-                # correlationValues = correlation.getValues()
-                
-                # probaValue = svmHandler.predictProba(correlationValues)
-                # classValue = svmHandler.predict(correlationValues)
-                # correlationProbability = probaValue[0][0]
-                
-                # if correlationProbability > correlationTreshold:
-                #     if(hypertAlert.isAlertnotEmpty()):
-                #         alertList = hypertAlert.getAlertList()
-                #         for hypertAlert in alertList:
-                #             alertId = hypertAlert.alertId
-                # # print str(probaValue[0][0])+', '+str(classValue)    
 
-    # for i in range(len(alerts)):
-    #     for j in range(len(alerts)):
-    #         correlation = AlertCorrelation(alerts[i],alerts[j])
-    #         alert1 = correlation.alert1.sig_name
-    #         alert2 = correlation.alert2.sig_name
-             
-    #         correlationValues = correlation.getValues()
-            
-    #         probaValue = svmHandler.predictProba(correlationValues)
-    #         classValue = svmHandler.predict(correlationValues)
-    #         print str(probaValue[0][0])+', '+str(classValue)
-    #         acm.incrementACMProbaValue(alert1,alert2,probaValue[0][0])
-    #         # print correlationValues
-    #         # print "prediction : " + str(svmHandler.predict(correlationValues))
-    #         # if(svmHandler.predict(correlationValues) == '1'):
-    #         #     acm.incrementACMValue(alert1,alert2)
-    #         #     # output = alert1 + "," +alert2+" : "+str(correlationValues)+"\n"
-    #         #     # outputFile.write(output)
-    #         #     count = count +1
-    #         # else:
-                
-    #             # print alert1
-    #             # print alert2
+                if correlationProbability > correlationTreshold:
+                    # print output
+                    acm.incrementACMProbaValue(alerts[i].sig_name,alerts[j].sig_name,correlationProbability)    
+                    hyperAlert.insertEgdeList(alerts[i].alertId,alerts[j].alertId,round(correlationProbability,2))
 
-    #         # count = count+1
-    #         # if(count == 5):
-    #         #     break
-
-    #     # if(count == 5):
-    #     #     break,.
-    # # outputFile.cl  osHandlere()
-    # print count
-    # print "selesai alert correlation"
-    # print "--- "+str(time.time() - start_time) +" seconds ---"
-
-    # acm.calculateAllSigmaValue()
-    # for row in acm.causalityMatrix:
-    #     print row
-
-    # relatedList = acm.getRelatedList() 
-    # edgeList = []
-    # labelList = []
-    # for row in relatedList:
-    #     edgeList.append(row.keys()[0])
-    #     labelList.append(row.values()[0])
+                    if alerts[i].sig_name == 'BAD-TRAFFIC loopback traffic' or alerts[j].sig_name == 'BAD-TRAFFIC loopback traffic':
+                        output = str(alerts[i].timestamp)+','+str(alerts[i].sig_name)+','+str(alerts[i].ip_src)+','+str(alerts[i].port_src)+','+str(alerts[i].ip_dst)+','+str(alerts[i].port_dst)+','+str(alerts[j].timestamp)+','+str(alerts[j].sig_name)+','+str(alerts[j].ip_src)+','+str(alerts[j].port_src)+','+str(alerts[j].ip_dst)+','+str(alerts[j].port_dst)+','+str(correlationProbability)
+                        print output
     
-    # graphDrawer = GraphDrawer(edgeList,labelList)
-    # print graphDrawer.graph 
-    # print graphDrawer.labels
+    correlationStrengthTreshold = 0.05
+    hyperAlertEdge = hyperAlert.getEdgeList()
+    visitedEdge = []
+    for i in range(len(hyperAlertEdge)):
+        # print hyperAlertEdge[i]
+        alert1 = alerts[(hyperAlertEdge[i][0]-1)].sig_name
+        alert2 = alerts[(hyperAlertEdge[i][1]-1)].sig_name
+        if len(visitedEdge) == 0:
+            
+            forwardCorrelationStrength = acm.calculateForwardCorrelationStrength(alert1,alert2)
+            # output = str(alert1)+', '+str(alert2)+', '+str(round(forwardCorrelationStrength,2))
+            # print output
+            if(forwardCorrelationStrength > correlationStrengthTreshold):
+                newEdge = (alert1,alert2,round(forwardCorrelationStrength,2))
+                visitedEdge.append(newEdge)
+        else:
+            visited = 0
+            for i in range(len(visitedEdge)):
+                if alert1 == visitedEdge[i][0] and alert2 == visitedEdge[i][1]:
+                    visited = 1
+            if visited:
+                continue
+            else:
+                forwardCorrelationStrength = acm.calculateForwardCorrelationStrength(alert1,alert2)
+                # output = str(alert1)+', '+str(alert2)+', '+str(round(forwardCorrelationStrength,2))
+                # print output
+                if(forwardCorrelationStrength > correlationStrengthTreshold):
+                    newEdge = (alert1,alert2,round(forwardCorrelationStrength,2))
+                    visitedEdge.append(newEdge)
+                else:
+                    continue
 
-    # graphDrawer.draw_graph()
+    attackGraphEdge = []
+
+    print 'attack graph'    
+    for row in visitedEdge:
+        
+        newEdge = {(row[0],row[1]):row[2]}
+        
+        attackGraphEdge.append(newEdge)
+
+    print 'forward correlation strength'
+    acmMatrix = acm.causalityMatrix
+    print alertList
+    for i in range(len(alertList)):
+        output = ''
+        for j in range(len(alertList)):
+            output = output + str(acm.calculateForwardCorrelationStrength(alertList[i],alertList[j]))+','
+
+    print 'acm value'
+    for i in range(len(alertList)):
+        output = ''
+        for j in range(len(alertList)):
+            output = output + str(acm.getACMValue(alertList[i],alertList[j]))+',' 
+
+    edgeList = []
+    labelList = []
+    for row in attackGraphEdge:
+        edgeList.append(row.keys()[0])
+        labelList.append(row.values()[0])
+
+    graphDrawer = GraphDrawer(edgeList,labelList)
+
+    graphDrawer.draw_graph()
+
     
 if __name__ == '__main__':
     main()

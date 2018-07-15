@@ -64,16 +64,38 @@ class Alert2:
     def setId(self,newId):
         self.alertId = newId
 
-    def printAll(self):
+    def getAlertInfo(self):
+        return str(self.alertId)+','+str(self.timestamp)+','+str(self.sig_name)+','+str(self.ip_src)+','+str(self.port_src)+','+str(self.ip_dst)+','+str(self.port_dst)
+
+class AlertList:
+    alertList = []
+    alertTypeList = []
     
-        output = str(self.timestamp) +','+str(self.sig_name)+','+str(self.ip_src)+','+str(self.ip_dst)
-        print output
+    def __init__(self):
+        self.alertList = []
+        self.alertTypeList = []
 
+    def insertNewAlert(self,alert):
+        self.alertList.append(alert)
+        if( (alert.sig_name in self.alertTypeList) == False):
+            self.alertTypeList.append(alert.sig_name)
+
+    def getAlertById(self,searchedId):
         
+        for i in range(len(self.alertList)):
+            if self.alertList[i].alertId == searchedId:
+                searchedAlert = self.alertList[i].alertId
+
+        return searchedAlert
+
+    def getAlertTypeList(self):
+        return self.alertTypeList
+
+    def getAlertList(self):
+        return self.alertList
 
 
-
-class AlertCorrelation:
+class FeatureExtractor:
     alert1      = []
     alert2      = []
     f1          = 0
@@ -90,12 +112,8 @@ class AlertCorrelation:
         self.f2     = self.calculateF2()
         self.f3     = self.calculateF3()
         self.f4     = self.calculateF4()
-        self.f5     = self.calculateF5()
+        # self.f5     = self.calculateF5()
         self.f6     = self.calculateF6()
-        
-        
-        # if (self.f1 >= self.tracehold and self.f2 >= self.tracehold)
-
 
     def ipToBinary(self,ipAddr):
         
@@ -117,13 +135,118 @@ class AlertCorrelation:
 
         return count
 
-    def getSrcPortNumber(self,alert):
-        port = 0
-        if(alert.tcp_sport != "Tidak menggunakan TCP"):
-            port = alert.tcp_sport
+    def compareIP(self,ipAddr1,ipAddr2):
+
+        ipBin1 = self.ipToBinary(ipAddr1)
+        ipBin2 = self.ipToBinary(ipAddr2)
+        
+        return self.compareUrutan(ipBin1,ipBin2)
+
+    def compareNumber(self,num1,num2):
+        if (num1 == num2):
+            return 1
         else:
-            port = alert.udp_sport
-        return port
+            return 0
+
+    def calculateF1(self):
+        ip_src1 = self.alert1.ip_src
+        ip_src2 = self.alert2.ip_src
+        return self.compareIP(ip_src1,ip_src2)/32
+        
+    def calculateF2(self):
+        ip_dst1 = self.alert1.ip_dst
+        ip_dst2 = self.alert2.ip_dst
+        return self.compareIP(ip_dst1,ip_dst2)/32        
+
+    def calculateF3(self):
+        src_port1 = self.alert1.port_dst
+        src_port2 = self.alert2.port_dst
+        return self.compareNumber(src_port1,src_port2)
+
+    def calculateF4(self):
+        ip_src1 = self.alert1.ip_src
+        ip_dst2 = self.alert2.ip_dst
+        return self.compareNumber(ip_src1,ip_dst2)
+
+    def calculateF5(self):
+        value = 0
+       
+        if(self.f1 == self.f2 == self.f3 == 1):
+            value = 1
+
+        return value
+
+    def setF5(self,value):
+        self.f5 = value
+    
+    def calculateF6(self):
+        time1 = self.alert1.timestamp.split('.')[0]
+        time1 = time.mktime(time.strptime(time1, "%m/%d-%H:%M:%S"))
+        # print "alert1 : "+str(time1)
+
+        time2 = self.alert2.timestamp.split('.')[0]
+        time2 = time.mktime(time.strptime(time2, "%m/%d-%H:%M:%S"))
+        # print "alert2 : "+str(time2)
+
+        deltaTime = abs(time1-time2)
+        if(deltaTime < 0.001):
+            frequency = 1/1
+        elif deltaTime>3600:
+            frequency = 0
+        else :
+            frequency = 1/(deltaTime)
+        
+        return frequency
+
+    def getValues(self):
+        newList = []
+        newList.append(self.f1)
+        newList.append(self.f2)
+        newList.append(self.f3)
+        newList.append(self.f4)
+        newList.append(self.f5)
+        newList.append(self.f6)
+        return newList
+
+class AlertCorrelation:
+    alert1      = []
+    alert2      = []
+    f1          = 0
+    f2          = 0
+    f3          = 0
+    f4          = 0
+    f5          = 0
+    f6          = 0
+    tracehold   = 0.5
+    def __init__(self,alert1,alert2):
+        self.alert1 = alert1
+        self.alert2 = alert2
+        self.f1     = self.calculateF1()
+        self.f2     = self.calculateF2()
+        self.f3     = self.calculateF3()
+        self.f4     = self.calculateF4()
+        self.f5     = self.calculateF5()
+        self.f6     = self.calculateF6()
+
+    def ipToBinary(self,ipAddr):
+        
+        ip = ipAddr.split(".")
+        fullBinary = ''
+        for number in ip:
+            binary = "{0:08b}".format(int(number))
+            fullBinary += binary    
+        return fullBinary
+    
+    def compareUrutan(self,string1,string2):
+        
+        count = 0
+        for x in range(len(string1)):
+            if(string1[x] != string2[x]):
+                break
+            else:
+                count = count + 1
+
+        return count
 
     def compareIP(self,ipAddr1,ipAddr2):
 
@@ -207,22 +330,21 @@ class TimeFrame:
         self.alerts.append(newAlert)
 
 class AlertCausalityMatrix:
-    causalityMatrix = []
-    alertList       = []
-    alertSigmaValue = []
-
+    causalityMatrix     = []
+    alertList           = []
+    forwardSigmaValue   = []
+    backwardSigmaValue  = []
     def __init__(self,newAlertList):
         self.alertList = newAlertList
         for i in range(len(self.alertList)):
             tempList = []
-            self.alertSigmaValue.append(0)    
+            self.forwardSigmaValue.append(0)    
             for j in range(len(self.alertList)):
                 tempList.append(0)
-
+                if i == 0:
+                    self.backwardSigmaValue.append(0)
             self.causalityMatrix.append(tempList)
         
-
-
     def getAlertIndex(self,alertName):
         
         if ((alertName in self.alertList) == True):
@@ -245,24 +367,43 @@ class AlertCausalityMatrix:
         index2 = self.getAlertIndex(alert2)
         if (index1 != -1 and index2 != -1):
             self.causalityMatrix[index1][index2] = self.causalityMatrix[index1][index2] + value
+            self.forwardSigmaValue[index1] = self.forwardSigmaValue[index1] + value
+            self.backwardSigmaValue[index2] = self.backwardSigmaValue[index2] + value
 
     def calculateAllSigmaValue(self):
         
         for i in range(len(self.alertList)):
-            self.alertSigmaValue[i] = 0
+            self.forwardSigmaValue[i] = 0
 
         for i in range(len(self.alertList)):
             for j in range(len(self.alertList)):
-               self.alertSigmaValue[i] += self.causalityMatrix[i][j] 
+               self.forwardSigmaValue[i] += self.causalityMatrix[i][j] 
 
     def calculateForwardCorrelationStrength(self,alert1,alert2):
         index1 = self.getAlertIndex(alert1)
         index2 = self.getAlertIndex(alert2)
-        value = self.causalityMatrix[index1][index2]/self.alertSigmaValue[index1]
-        return value
+        if(self.forwardSigmaValue[index1] == 0):
+            return 0
+        else:
+            value = self.causalityMatrix[index1][index2]/self.forwardSigmaValue[index1]
+            return value
+
+    def calculateBackwardCorrelationStrength(self,alert1,alert2):
+        index1 = self.getAlertIndex(alert1)
+        index2 = self.getAlertIndex(alert2)
+        if(self.backwardSigmaValue[index2] == 0):
+            return 0
+        else:    
+            value = self.causalityMatrix[index1][index2]/self.backwardSigmaValue[index2]
+            return value
+
+    def getACMValue(self,alert1,alert2):
+        index1 = self.getAlertIndex(alert1)
+        index2 = self.getAlertIndex(alert2)
+        return self.causalityMatrix[index1][index2]
 
     def getRelatedList(self):
-        self.calculateAllSigmaValue()
+        # self.calculateAllSigmaValue()
         edgeList = []
         for i in range(len(self.alertList)):
             maxValue = 0
@@ -296,32 +437,23 @@ class HyperAlert:
         self.alertList  = []
         self.edgeList   = []
         print "Inisiasi Hyper Alert Graf"
-    
-    def isAlertnotEmpty(self):
-        if len(self.alertList != 0):
-            return 1
-        else:
-            return 0
 
     def getAlertList(self):
         return self.alertList
+
+    def getEdgeList(self):
+        return self.edgeList
     
-    def insertNewHyperAlert(self,newAlert):
-        if self.isAlertnotEmpty() == 0:
-            alert = (newAlert.alertId,newAlert.sig_name)
-            self.alertList.append(alert)
+    def insertNewHyperAlert(self,newAlertId):
+        if (newAlertId in self.alertList):
+            return self.alertList.index(newAlertId)
         else:
-            existFlag = 0
-            for alert in self.alertList:
-                print alert
-                if(alert[0] == newAlert.alertId):
-                    existFlag = 1
-            if existFlag == 0:
-                alert = (newAlert.alertId,newAlert.sig_name)
-                self.alertList.append(alert)
+            self.alertList.append(newAlertId)
+            return self.alertList.index(newAlertId)  
 
     def insertEgdeList(self, alert1, alert2, probability):
         edge = (alert1,alert2,probability)
+        
         self.edgeList.append(edge)
 
 # "1","2000-03-07 06:51:36","172.16.115.1","202.77.162.213","Ya","8","Tidak menggunakan TCP","Tidak menggunakan TCP","Tidak menggunakan UDP","Tidak menggunakan UDP","ICMP PING","misc-activity"
