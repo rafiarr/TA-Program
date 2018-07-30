@@ -1,21 +1,12 @@
-Things To Do :
----------------
-Program :
-- Baca dataset V
-- Sort dataset V
-- F1 V
-- F2 V
-- F3 V
-- F4 V
-- F5 
-- F6 - Test
-- SVM
-- Output
+Dataset :
+- Snort dump tcpdump, generate alert (snort using tcpdump file) --- bangsat
+- Update Rule Snort --- bangsat
+- Barnyard output ke mysql
+- Dump LLDOS 2
+- Analisis dataset
 
----------------
-Buku :
-- Download Proposal
-- Ubah Cover
-- Ubah Lembar Pengesahan
-- Buat Abstrak
-- Cari Kata kunci
+
+Program :
+- Benerin Algo Alert Correlation (Ubah pake predict proba)
+
+Output :

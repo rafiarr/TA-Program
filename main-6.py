@@ -15,19 +15,15 @@ def calculateCorrelationProbability(alerti,alertj,classificationHandler,acm):
 
     if (acm.getACMValue(alert1,alert2) != 0):
         correlation.setF5(float(acm.calculateBackwardCorrelationStrength(alert1,alert2)))
-        # print 'masuk'
+        
     else:
         correlation.setF5(correlation.calculateF5())
-        
 
     correlationValues = correlation.getValues()
-    # print correlationValues
 
     probaValue = classificationHandler.predictProba(correlationValues)
     classValue = classificationHandler.predict(correlationValues)
-    # print probaValue[0][0]
-
-
+    
     return probaValue[0][0]
 
 def main():
@@ -208,6 +204,15 @@ def main():
         outputRow.append("\n")
         outputArray.append(outputRow)
 
+    attackGraphEdge = []
+    correlationStrengthTreshold = 0.1
+    for i in range(len(alertList)):
+        for j in range(len(alertList)):
+            forwardCorrelationStrength = acm.calculateForwardCorrelationStrength(alertList[i],alertList[j])
+            if(forwardCorrelationStrength > correlationStrengthTreshold):
+                newEdge = {(alertList[i],alertList[j]):round(forwardCorrelationStrength,2)}
+                attackGraphEdge.append(newEdge)
+    
     osHandler.printArray(fileTabelAcm,outputArray)
 
     attackGraphEdge = []
