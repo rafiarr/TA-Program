@@ -47,7 +47,7 @@ def main():
     outputRow = []
     outputRow.append("Waktu membaca dataset :")
     startTime = time.time()
-    alerts, alertLists, alertFilenames = osHandler.getAlertinDataset3('dataset/LLDOS-1.0/')
+    alerts, alertLists, alertFilenames = osHandler.getAlertinDataset3('dataset/LLDOS-2.0/')
     outputRow.append(" "+str(time.time() - startTime)+" detik")
     outputRow.append("\n")
     outputWaktuArray.append(outputRow)
